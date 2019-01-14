@@ -4,6 +4,8 @@ from mock import call
 import pytest
 from pytest_mock import mocker 
 
+from tests.run_online_tests import *
+
 def create_client(credentials_file='credentials.json'):
     return(gc.Pygsheets(credentials_file))
 
@@ -59,7 +61,9 @@ def test_errors_when_client_is_not_authenticated(mocker):
        create_client().get_client()
 
 def test_returns_client_when_authentication_is_completed(mocker):
- 
+    if RUN_ONLINE_TESTS:
+        gc.Pygsheets('credentials.json').authenticate()
+
     mocker.patch.object(gc.os.path, 'isfile')
     gc.os.path.isfile.return_value = True
     mocker.patch.object(gc.pygsheets, 'authorize')
