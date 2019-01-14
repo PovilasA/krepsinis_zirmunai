@@ -84,3 +84,24 @@ def test_initialization_catches_WorksheetNotFound_error(mocker):
    with pytest.raises(gs.GoogleWorksheetNotFound):
        gs.Worksheet(client, 'spreadsheet_name', 'worksheet_name')
 
+
+### read_cell()
+
+def test_read_value_returns_correct_value_of_the_cell(mocker):
+   if RUN_ONLINE_TESTS:
+      _,_ = create_test_spreadsheet()
+      wks = gs.Worksheet(client, test_spreadsheet_name, 'Sheet1')
+      assert wks.read_cell('B1') == 'value_B1'
+      delete_test_spreadsheet()
+
+   # Offline test
+   _, worksheet_mock = mock_gs_worksheet(mocker)
+   cell_mock = MagicMock()
+   mocker.patch.object(worksheet_mock, 'cell')
+   worksheet_mock.cell.return_value = cell_mock
+   mocker.patch.object(cell_mock, 'value')
+   cell_mock.value = 'value_B1'
+
+   wks = gs.Worksheet(client, 'spreadsheet_name', 'worksheet_name')
+   assert wks.read_cell('B1') == 'value_B1'
+

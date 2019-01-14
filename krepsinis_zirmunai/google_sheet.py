@@ -17,9 +17,13 @@ class Worksheet:
          m = 'Could not find a worksheet with title %s.' % worksheet_name
          raise GoogleWorksheetNotFound(m)
 
+   def read_cell(self, cell):
+      return(self.worksheet.cell(cell).value)
 
+   def read_multiple_values(self, reference):
+      1
 
-
+      
 class GoogleSpreadsheetNotFound(Exception):
    pass
 
