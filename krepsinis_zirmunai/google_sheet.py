@@ -20,6 +20,18 @@ class Worksheet:
    def read_cell(self, cell):
       return(self.worksheet.cell(cell).value)
 
+   def Range(self, string_range):
+      return Worksheet._Range(self, string_range)
+
+   class _Range:
+
+      def __init__(self, worksheet_self, string_range):
+         self.pygsheets_worksheet = worksheet_self.worksheet
+         self.spreadsheet_name = worksheet_self.spreadsheet.title
+         self.worksheet_name = worksheet_self.worksheet.title
+         self.string_range = string_range
+         self.raw_matrix = worksheet_self.worksheet.range(string_range, 'cells')
+
       
 class GoogleSpreadsheetNotFound(Exception):
    pass

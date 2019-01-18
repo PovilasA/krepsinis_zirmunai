@@ -103,3 +103,32 @@ def test_read_cell_returns_correct_value_of_the_cell(mocker):
 
    wks = gs.Worksheet(client, 'spreadsheet_name', 'worksheet_name')
    assert wks.read_cell('B1') == 'value_B1'
+
+### class Range
+
+def test_Range_function_initialize_Range_class(mocker):
+   if RUN_ONLINE_TESTS:
+      _,_ = create_test_spreadsheet()
+      wks = gs.Worksheet(client, test_spreadsheet_name, 'Sheet1')
+      wks_range = wks.Range('A1:C2')
+
+      assert wks_range.pygsheets_worksheet == wks.worksheet
+      assert wks_range.spreadsheet_name == test_spreadsheet_name
+      assert wks_range.worksheet_name == 'Sheet1'
+
+      m = wks_range.raw_matrix
+      assert_range_matrix_class(m, gc.pygsheets.cell.Cell)
+      delete_test_spreadsheet()
+
+   # Offline test
+   worksheet_mock = mock_gs_range(mocker)
+
+   wks = gs.Worksheet(client, test_spreadsheet_name, 'Sheet1')
+   wks_range = wks.Range('A1:C2')
+   assert isinstance(wks_range, gs.Worksheet._Range)
+   assert wks_range.pygsheets_worksheet == worksheet_mock
+   assert wks_range.spreadsheet_name == 'spreadsheet_title'
+   assert wks_range.worksheet_name == 'worksheet_title'
+   assert wks_range.string_range == 'A1:C2'
+   assert_range_matrix_class(wks_range.raw_matrix, Fake_Pygsheets_Cell)
+   wks.worksheet.range.assert_called_with('A1:C2', 'cells')
