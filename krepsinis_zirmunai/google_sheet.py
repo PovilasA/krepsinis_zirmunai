@@ -20,9 +20,6 @@ class Worksheet:
    def read_cell(self, cell):
       return(self.worksheet.cell(cell).value)
 
-   def read_multiple_values(self, reference):
-      1
-
       
 class GoogleSpreadsheetNotFound(Exception):
    pass
