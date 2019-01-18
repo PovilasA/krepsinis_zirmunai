@@ -32,6 +32,62 @@ class Worksheet:
          self.string_range = string_range
          self.raw_matrix = worksheet_self.worksheet.range(string_range, 'cells')
 
+      def extract(self, method, return_format, headers):
+         method = getattr(self.Extractions, method)
+         matrix = [[method(x_ij) for x_ij in x_i] for x_i in self.raw_matrix]
+         table = self.Table(matrix, headers)
+         if return_format == 'matrix':
+            return(table.as_matrix())
+         elif return_format == 'dataframe':
+            return(table.as_dataframe())
+
+      class Table:
+         def __init__(self, matrix, headers):
+            self.matrix = matrix
+            self.headers = headers
+         
+         def as_matrix(self):
+            if self.headers:
+               pass
+            else:
+               return(self.matrix)
+         
+         def as_dataframe(self):
+            pass
+
+      class Extractions:
+         default = lambda x: x
+         raw_value = lambda x: x.value
+         color = lambda x: x.color
+         text_format = lambda x: x.text_format
+         # More could be specified in the future. These functions are not tested!
+
+
+      def cells_matrix(self, headers=True):
+         return(self.extract(method='default', 
+                             return_format='matrix',
+                             headers=headers))
+
+      def cells_dataframe(self, headers=True):
+         return(
+            extract(method='default', return_format='dataframe', headers=headers))
+      
+      def values_matrix(self, headers=True):
+         return(
+            extract(method='raw_values', return_format='matrix', headers=headers))
+
+      def values_dataframe(self, headers=True):
+         return(
+            extract(method='raw_values', return_format='dataframe', headers=headers))
+
+      def colors_matrix(self, headers=True):
+         return(
+            extract(method='color', return_format='matrix', headers=headers))
+
+      def colors_dataframe(self, headers=True):
+         return(
+            extract(method='color', return_format='dataframe', headers=headers))
+
       
 class GoogleSpreadsheetNotFound(Exception):
    pass
