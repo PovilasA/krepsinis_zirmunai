@@ -1,0 +1,1 @@
+RUN_ONLINE_TESTS = True
