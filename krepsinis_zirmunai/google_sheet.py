@@ -121,7 +121,15 @@ class Worksheet:
 
       class ParseTable:
          # probably assign_format is not needed!
-         pass
+         def __init__(self, table, headers, indices):
+            self.table = table
+            self.headers = headers
+            self.indices = indices
+            self.validate_table()
+
+         def validate_table(self):
+            pass
+            # Throw ParseTableError
 
       class ParseTableError(Exception):
          pass
