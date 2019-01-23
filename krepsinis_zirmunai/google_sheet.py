@@ -134,6 +134,12 @@ class Worksheet:
       class ParseTableError(Exception):
          pass
 
+      def set(self):
+         self.pygsheets_worksheet.update_cells(self.string_range, self.new_matrix)
+         # TODO as mentioned in method change() this function might be updated
+         # to change cells one-by-one and use mapping which cells to change 
+         # created by change() method
+
 
 class GoogleSpreadsheetNotFound(Exception):
    pass
