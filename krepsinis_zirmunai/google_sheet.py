@@ -31,6 +31,7 @@ class Worksheet:
          self.worksheet_name = worksheet_self.worksheet.title
          self.string_range = string_range
          self.raw_matrix = worksheet_self.worksheet.range(string_range, 'cells')
+         self.new_matrix = None
 
       def extract(self, method, extract_format, headers):
          method = getattr(self.CellExtract, method)
@@ -70,8 +71,8 @@ class Worksheet:
 
       def cells_dataframe(self, headers=True):
          return(self.extract(method='default', 
-                     extract_format='dataframe',
-                     headers=headers))
+                             extract_format='dataframe',
+                             headers=headers))
       
       def values_matrix(self, headers=True):
          return(self.extract(method='raw_values', 
@@ -98,11 +99,17 @@ class Worksheet:
       def change(self, method, assign_format, headers, table):
          method = getattr(self.CellAssign, method)
          values = self.ParseTable(table, headers)
-         self.raw_matrix = [[method(x_ij, v_ij) for x_ij,v_ij in zip(x_i,v_i)] 
+         # check dimensions of raw_matrix and table!
+         # check table format!
+         self.new_matrix = [[method(x_ij, v_ij) for x_ij,v_ij in zip(x_i,v_i)] 
                            for x_i,v_i in zip(self.raw_matrix, values)]
+         return(self)
+         # TODO cells might be updated one-by-one (not all at once). For that
+         # good idea would to track which cells were changed and then really 
+         # update only changed values. However, for this case this is not very
+         # important that's why I skipped that. At least for a while.
 
       class CellAssign:
-         # raw_value = lambda x,y: x.value = y
          def raw_value(cell, value): cell.value = value; return(cell)
 
       class ParseTable:

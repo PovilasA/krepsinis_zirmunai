@@ -130,6 +130,7 @@ def test_Range_function_initialize_Range_class(mocker):
    assert wks_range.spreadsheet_name == 'spreadsheet_title'
    assert wks_range.worksheet_name == 'worksheet_title'
    assert wks_range.string_range == 'A1:C2'
+   assert wks_range.new_matrix == None
    assert_range_matrix_class(wks_range.raw_matrix, FakePygsheetsCell)
    wks.worksheet.range.assert_called_with('A1:C2', 'cells')
 
