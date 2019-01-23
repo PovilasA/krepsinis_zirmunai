@@ -93,6 +93,26 @@ class Worksheet:
                              extract_format='dataframe',
                              headers=headers))
 
+
+
+      def change(self, method, assign_format, headers, table):
+         method = getattr(self.CellAssign, method)
+         values = self.ParseTable(table, headers)
+         self.raw_matrix = [[method(x_ij, v_ij) for x_ij,v_ij in zip(x_i,v_i)] 
+                           for x_i,v_i in zip(self.raw_matrix, values)]
+
+      class CellAssign:
+         # raw_value = lambda x,y: x.value = y
+         def raw_value(cell, value): cell.value = value; return(cell)
+
+      class ParseTable:
+         # probably assign_format is not needed!
+         pass
+
+      class ParseTableError(Exception):
+         pass
+
+
 class GoogleSpreadsheetNotFound(Exception):
    pass
 
