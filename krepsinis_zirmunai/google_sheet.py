@@ -32,16 +32,16 @@ class Worksheet:
          self.string_range = string_range
          self.raw_matrix = worksheet_self.worksheet.range(string_range, 'cells')
 
-      def extract(self, method, return_format, headers):
-         method = getattr(self.Extractions, method)
+      def extract(self, method, extract_format, headers):
+         method = getattr(self.CellExtract, method)
          matrix = [[method(x_ij) for x_ij in x_i] for x_i in self.raw_matrix]
-         table = self.Table(matrix, headers)
-         if return_format == 'matrix':
+         table = self.PrepareTable(matrix, headers)
+         if extract_format == 'matrix':
             return(table.as_matrix())
-         elif return_format == 'dataframe':
+         elif extract_format == 'dataframe':
             return(table.as_dataframe())
 
-      class Table:
+      class PrepareTable:
          def __init__(self, matrix, headers):
             self.matrix = matrix
             self.headers = headers
@@ -55,7 +55,7 @@ class Worksheet:
          def as_dataframe(self):
             pass
 
-      class Extractions:
+      class CellExtract:
          default = lambda x: x
          raw_value = lambda x: x.value
          color = lambda x: x.color
@@ -65,30 +65,34 @@ class Worksheet:
 
       def cells_matrix(self, headers=True):
          return(self.extract(method='default', 
-                             return_format='matrix',
+                             extract_format='matrix',
                              headers=headers))
 
       def cells_dataframe(self, headers=True):
-         return(
-            extract(method='default', return_format='dataframe', headers=headers))
+         return(self.extract(method='default', 
+                     extract_format='dataframe',
+                     headers=headers))
       
       def values_matrix(self, headers=True):
-         return(
-            extract(method='raw_values', return_format='matrix', headers=headers))
+         return(self.extract(method='raw_values', 
+                             extract_format='matrix',
+                             headers=headers))
 
       def values_dataframe(self, headers=True):
-         return(
-            extract(method='raw_values', return_format='dataframe', headers=headers))
+         return(self.extract(method='raw_values', 
+                             extract_format='dataframe',
+                             headers=headers))
 
       def colors_matrix(self, headers=True):
-         return(
-            extract(method='color', return_format='matrix', headers=headers))
+         return(self.extract(method='color', 
+                             extract_format='matrix',
+                             headers=headers))
 
       def colors_dataframe(self, headers=True):
-         return(
-            extract(method='color', return_format='dataframe', headers=headers))
+         return(self.extract(method='color', 
+                             extract_format='dataframe',
+                             headers=headers))
 
-      
 class GoogleSpreadsheetNotFound(Exception):
    pass
 

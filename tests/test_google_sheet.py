@@ -130,7 +130,7 @@ def test_Range_function_initialize_Range_class(mocker):
    assert wks_range.spreadsheet_name == 'spreadsheet_title'
    assert wks_range.worksheet_name == 'worksheet_title'
    assert wks_range.string_range == 'A1:C2'
-   assert_range_matrix_class(wks_range.raw_matrix, Fake_Pygsheets_Cell)
+   assert_range_matrix_class(wks_range.raw_matrix, FakePygsheetsCell)
    wks.worksheet.range.assert_called_with('A1:C2', 'cells')
 
 ### extract methods (tested only some final methods. Others are very similar)
@@ -148,7 +148,7 @@ def create_range():
    wks_range = wks.Range('A1:C2')
    return(wks_range)
 
-class Fake_Pygsheets_Cell:
+class FakePygsheetsCell:
    def __init__(self, value='no_value', color='no_color'):
       self.value = value
       self.color = color
@@ -158,7 +158,7 @@ def mock_gs_range(mocker):
    mocker.patch.object(worksheet_mock, 'range')
    mocker.patch.object(worksheet_mock, 'title')
    mocker.patch.object(spreadsheet_mock, 'title')
-   worksheet_mock.range.return_value = [[Fake_Pygsheets_Cell()]*3]*2
+   worksheet_mock.range.return_value = [[FakePygsheetsCell()]*3]*2
    worksheet_mock.title = 'worksheet_title'
    spreadsheet_mock.title = 'spreadsheet_title'
    return(worksheet_mock)
@@ -174,7 +174,7 @@ def test_cells_matrix_without_headers(mocker):
    mock_gs_range(mocker)
    wks_range = create_range()
    m = wks_range.cells_matrix(headers=False)
-   assert_range_matrix_class(m, Fake_Pygsheets_Cell)
+   assert_range_matrix_class(m, FakePygsheetsCell)
 
 def test_values_dataframe_without_headers(mocker):
    pass
