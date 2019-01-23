@@ -164,28 +164,28 @@ def mock_gs_range(mocker):
    spreadsheet_mock.title = 'spreadsheet_title'
    return(worksheet_mock)
    
-def test_cells_matrix_without_headers(mocker):
+def test_cells_matrix_without_headers_without_indices(mocker):
    if RUN_ONLINE_TESTS:
       wks_range = create_range()
-      m = wks_range.cells_matrix(headers=False)
+      m = wks_range.cells_matrix(headers=False, indices=False)
       assert_range_matrix_class(m, gc.pygsheets.cell.Cell)
       delete_test_spreadsheet()
 
    # Offline test
    mock_gs_range(mocker)
    wks_range = create_range()
-   m = wks_range.cells_matrix(headers=False)
+   m = wks_range.cells_matrix(headers=False, indices=False)
    assert_range_matrix_class(m, FakePygsheetsCell)
 
-def test_values_dataframe_without_headers(mocker):
+def test_values_dataframe_without_headers_with_indices(mocker):
    pass
 
-def test_values_matrix_with_headers(mocker):
+def test_values_matrix_with_headers_with_indices(mocker):
    pass
    # m = wks_range.values_matrix(True)
    # assert m == [['', '2', '']]
 
-def test_colors_dataframe_with_headers(mocker):
+def test_colors_dataframe_with_headers_without_indices(mocker):
    pass
 
 

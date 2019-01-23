@@ -33,19 +33,20 @@ class Worksheet:
          self.raw_matrix = worksheet_self.worksheet.range(string_range, 'cells')
          self.new_matrix = None
 
-      def extract(self, method, extract_format, headers):
+      def extract(self, method, extract_format, headers, indices):
          method = getattr(self.CellExtract, method)
          matrix = [[method(x_ij) for x_ij in x_i] for x_i in self.raw_matrix]
-         table = self.PrepareTable(matrix, headers)
+         table = self.PrepareTable(matrix, headers, indices)
          if extract_format == 'matrix':
             return(table.as_matrix())
          elif extract_format == 'dataframe':
             return(table.as_dataframe())
 
       class PrepareTable:
-         def __init__(self, matrix, headers):
+         def __init__(self, matrix, headers, indices):
             self.matrix = matrix
             self.headers = headers
+            self.indices = indices
          
          def as_matrix(self):
             if self.headers:
@@ -64,41 +65,47 @@ class Worksheet:
          # More could be specified in the future. These functions are not tested!
 
 
-      def cells_matrix(self, headers=True):
+      def cells_matrix(self, headers=True, indices=False):
          return(self.extract(method='default', 
                              extract_format='matrix',
-                             headers=headers))
+                             headers=headers,
+                             indices=indices))
 
-      def cells_dataframe(self, headers=True):
+      def cells_dataframe(self, headers=True, indices=False):
          return(self.extract(method='default', 
                              extract_format='dataframe',
-                             headers=headers))
+                             headers=headers,
+                             indices=indices))
       
-      def values_matrix(self, headers=True):
+      def values_matrix(self, headers=True, indices=False):
          return(self.extract(method='raw_values', 
                              extract_format='matrix',
-                             headers=headers))
+                             headers=headers,
+                             indices=indices))
 
-      def values_dataframe(self, headers=True):
+      def values_dataframe(self, headers=True, indices=False):
          return(self.extract(method='raw_values', 
                              extract_format='dataframe',
-                             headers=headers))
+                             headers=headers,
+                             indices=indices))
 
-      def colors_matrix(self, headers=True):
+      def colors_matrix(self, headers=True, indices=False):
          return(self.extract(method='color', 
                              extract_format='matrix',
-                             headers=headers))
+                             headers=headers,
+                             indices=indices))
 
-      def colors_dataframe(self, headers=True):
+      def colors_dataframe(self, headers=True, indices=False):
          return(self.extract(method='color', 
                              extract_format='dataframe',
-                             headers=headers))
+                             headers=headers,
+                             indices=indices))
 
 
 
-      def change(self, method, assign_format, headers, table):
+      def change(self, method, assign_format, headers, indices, table):
          method = getattr(self.CellAssign, method)
-         values = self.ParseTable(table, headers)
+         values = self.ParseTable(table, headers, indices)
          # check dimensions of raw_matrix and table!
          # check table format!
          self.new_matrix = [[method(x_ij, v_ij) for x_ij,v_ij in zip(x_i,v_i)] 
@@ -106,7 +113,7 @@ class Worksheet:
          return(self)
          # TODO cells might be updated one-by-one (not all at once). For that
          # good idea would to track which cells were changed and then really 
-         # update only changed values. However, for this case this is not very
+         # update only changed cells. However, for this case this is not very
          # important that's why I skipped that. At least for a while.
 
       class CellAssign:
