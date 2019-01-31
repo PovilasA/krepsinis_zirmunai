@@ -1,4 +1,5 @@
 from krepsinis_zirmunai import google_client as gc
+import pandas as pd
 
 class Worksheet:
 
@@ -49,13 +50,41 @@ class Worksheet:
             self.indices = indices
          
          def as_matrix(self):
+            mat = self.matrix
             if self.headers:
-               pass
-            else:
-               return(self.matrix)
+               mat = mat[1:]
+            if self.indices:
+               mat = [x_i[1:] for x_i in mat]
+            return(mat)
          
          def as_dataframe(self):
+            if self.indices and self.headers:
+               headers = self.matrix.pop(0)
+               if not headers[0].__hash__: # other option: isinstance(headers[0], collections.Hashable)
+                  m = 'Object %s is not hashable and cannot be viewed as dataframe index!' % headers[0]
+                  raise Worksheet._Range.PrepareTableError(m)
+               df = pd.DataFrame(self.matrix, columns=headers).set_index(headers[0])
+
+            if self.indices and not self.headers:
+               df = pd.DataFrame(self.matrix).set_index(0)
+               df.index = list(df.index.get_values())
+
+            if not self.indices and self.headers:
+               headers = self.matrix.pop(0)
+               df = pd.DataFrame(self.matrix, columns=headers)
+
+            if not self.indices and not self.headers:
+               df = pd.DataFrame(self.matrix)
+            return(df)
+
+      class PrepareTableError(Exception):
+         pass     
             pass
+         pass     
+            pass
+         pass     
+            pass
+         pass     
 
       class CellExtract:
          default = lambda x: x
@@ -65,37 +94,37 @@ class Worksheet:
          # More could be specified in the future. These functions are not tested!
 
 
-      def cells_matrix(self, headers=True, indices=False):
+      def get_cells_matrix(self, headers=True, indices=False):
          return(self.extract(method='default', 
                              extract_format='matrix',
                              headers=headers,
                              indices=indices))
 
-      def cells_dataframe(self, headers=True, indices=False):
+      def get_cells_dataframe(self, headers=True, indices=False):
          return(self.extract(method='default', 
                              extract_format='dataframe',
                              headers=headers,
                              indices=indices))
       
-      def values_matrix(self, headers=True, indices=False):
-         return(self.extract(method='raw_values', 
+      def get_values_matrix(self, headers=True, indices=False):
+         return(self.extract(method='raw_value', 
                              extract_format='matrix',
                              headers=headers,
                              indices=indices))
 
-      def values_dataframe(self, headers=True, indices=False):
-         return(self.extract(method='raw_values', 
+      def get_values_dataframe(self, headers=True, indices=False):
+         return(self.extract(method='raw_value', 
                              extract_format='dataframe',
                              headers=headers,
                              indices=indices))
 
-      def colors_matrix(self, headers=True, indices=False):
+      def get_colors_matrix(self, headers=True, indices=False):
          return(self.extract(method='color', 
                              extract_format='matrix',
                              headers=headers,
                              indices=indices))
 
-      def colors_dataframe(self, headers=True, indices=False):
+      def get_colors_dataframe(self, headers=True, indices=False):
          return(self.extract(method='color', 
                              extract_format='dataframe',
                              headers=headers,

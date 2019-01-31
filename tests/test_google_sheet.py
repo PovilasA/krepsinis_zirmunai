@@ -12,11 +12,15 @@ import random
 client = gc.Pygsheets().authenticate().get_client()
 test_spreadsheet_name ='krepsinis_zirmunai_test_spreadsheet'
 
-def create_test_spreadsheet():
+def create_test_spreadsheet(named_index=False):
    spreadsheet = client.create(test_spreadsheet_name)
    worksheet = spreadsheet.worksheet_by_title('Sheet1')
    worksheet.cell('B1').value = 'value_B1'
    worksheet.cell('B2').value = 2
+   worksheet.cell('A2').value = 1
+   if named_index:
+      worksheet.cell('A1').value = 'index_name'
+      worksheet.cell('A1').color = (1, 1, 0, 0)
    return(spreadsheet, worksheet)
 
 
@@ -30,6 +34,9 @@ def mock_gs_worksheet(mocker):
 
    mocker.patch.object(client, 'open')
    client.open.return_value = spreadsheet_mock
+
+   mocker.patch.object(client, 'create')
+   client.create.return_value = spreadsheet_mock
 
    mocker.patch.object(spreadsheet_mock, 'worksheet_by_title')
    spreadsheet_mock.worksheet_by_title.return_value = worksheet_mock
@@ -143,52 +150,148 @@ def assert_range_matrix_class(matrix, cell_class):
    assert all(isinstance(x, cell_class) for x in matrix[0])
    assert all(isinstance(x, cell_class) for x in matrix[1])
 
-def create_range():
-   _,_ = create_test_spreadsheet()
+def create_range(string_range = 'A1:C2', named_index='False'):
+   _,_ = create_test_spreadsheet(named_index=named_index)
    wks = gs.Worksheet(client, test_spreadsheet_name, 'Sheet1')
-   wks_range = wks.Range('A1:C2')
+   wks_range = wks.Range(string_range)
    return(wks_range)
 
 class FakePygsheetsCell:
-   def __init__(self, value='no_value', color='no_color'):
+   def __init__(self, value='no_value', color=(0, 1, 0, 0)):
       self.value = value
       self.color = color
+      self.__hash__ = None
 
-def mock_gs_range(mocker):
+def mock_gs_range(mocker, matrix_dim = [2,3]):
    spreadsheet_mock, worksheet_mock = mock_gs_worksheet(mocker)
    mocker.patch.object(worksheet_mock, 'range')
    mocker.patch.object(worksheet_mock, 'title')
    mocker.patch.object(spreadsheet_mock, 'title')
-   worksheet_mock.range.return_value = [[FakePygsheetsCell()]*3]*2
+   worksheet_mock.range.return_value = [[FakePygsheetsCell()]*matrix_dim[1]]*matrix_dim[0]
    worksheet_mock.title = 'worksheet_title'
    spreadsheet_mock.title = 'spreadsheet_title'
    return(worksheet_mock)
    
-def test_cells_matrix_without_headers_without_indices(mocker):
+#### PrepareTable as_matrix
+
+def test_get_cells_matrix_without_headers_without_indices(mocker):
    if RUN_ONLINE_TESTS:
       wks_range = create_range()
-      m = wks_range.cells_matrix(headers=False, indices=False)
+      m = wks_range.get_cells_matrix(headers=False, indices=False)
       assert_range_matrix_class(m, gc.pygsheets.cell.Cell)
       delete_test_spreadsheet()
 
    # Offline test
    mock_gs_range(mocker)
    wks_range = create_range()
-   m = wks_range.cells_matrix(headers=False, indices=False)
+   m = wks_range.get_cells_matrix(headers=False, indices=False)
    assert_range_matrix_class(m, FakePygsheetsCell)
 
-def test_values_dataframe_without_headers_with_indices(mocker):
-   pass
+def test_get_values_matrix_with_headers_with_indices(mocker):
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range('A1:B2', named_index=False)
+      m = wks_range.get_values_matrix(headers=True, indices=True)
+      assert m == [['2']]
+      delete_test_spreadsheet()
 
-def test_values_matrix_with_headers_with_indices(mocker):
-   pass
-   # m = wks_range.values_matrix(True)
-   # assert m == [['', '2', '']]
+   # Offline test
+   mock_gs_range(mocker, matrix_dim = [2,2])
+   wks_range = create_range('A1:B2', named_index=False)
+   m = wks_range.get_values_matrix(headers=True, indices=True)
+   assert m == [['no_value']]
 
-def test_colors_dataframe_with_headers_without_indices(mocker):
-   pass
+#### PrepareTable as_dataframe
+
+def test_get_colors_dataframe_with_header_with_indices(mocker):
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range(named_index=True)
+      df = wks_range.get_colors_dataframe(headers=True, indices=True)
+      tupl = (None, None, None, None)
+      df_test = gs.pd.DataFrame([[tupl,tupl,tupl]], columns = [(1, 1, 0, 0),tupl,tupl]).set_index((1, 1, 0, 0))
+      gs.pd.testing.assert_frame_equal(df, df_test)
+      delete_test_spreadsheet()
+
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range(named_index=True)
+   wks_range.raw_matrix[0][0] = FakePygsheetsCell(color=(1, 1, 0, 0)) # mock index name value
+   wks_range.raw_matrix[1][0] = FakePygsheetsCell(color=(1, 1, 0, 0)) # don't know exactly why this value is automatically the same as [0][0]
+   df = wks_range.get_colors_dataframe(headers=True, indices=True)
+   tupl = (0, 1, 0, 0)
+   df_test = gs.pd.DataFrame([[(1, 1, 0, 0),tupl,tupl]], 
+                             columns = [(1, 1, 0, 0),tupl,tupl]
+                             ).set_index((1, 1, 0, 0))
+   gs.pd.testing.assert_frame_equal(df, df_test)
+
+def test_get_colors_dataframe_with_headers_without_indices(mocker):
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range(named_index=False)
+      df = wks_range.get_colors_dataframe(headers=True, indices=False)
+      tupl = (None, None, None, None)
+      df_test = gs.pd.DataFrame([[tupl,tupl,tupl]], columns = [tupl]*3)
+      gs.pd.testing.assert_frame_equal(df, df_test)
+      delete_test_spreadsheet()
+
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
+   df = wks_range.get_colors_dataframe(headers=True, indices=False)
+   tupl = (0, 1, 0, 0)
+   df_test = gs.pd.DataFrame([[tupl,tupl,tupl]], columns = [tupl]*3)
+   gs.pd.testing.assert_frame_equal(df, df_test)
 
 
+def test_get_values_dataframe_without_headers_with_indices(mocker):
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range(named_index=True)
+      df = wks_range.get_values_dataframe(headers=False, indices=True)
+      df_test = gs.pd.DataFrame({1:['value_B1','2'],2:['','']}, index=['index_name','1'])
+      gs.pd.testing.assert_frame_equal(df, df_test)
+      delete_test_spreadsheet()
+
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
+   df = wks_range.get_values_dataframe(headers=False, indices=True)
+   df_test = gs.pd.DataFrame({1:['no_value','no_value'],
+                              2:['no_value','no_value']}, 
+                             index=['no_value','no_value'])
+   gs.pd.testing.assert_frame_equal(df, df_test)
+
+
+def test_get_cells_dataframe_without_header_without_indices(mocker):
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range(named_index=False)
+      df = wks_range.get_cells_dataframe(headers=False, indices=False)
+      assert list(df.columns) == [0,1,2]
+      assert list(df.index) == [0,1]
+      m = [[item for item in row] for _,row in df.iterrows()]
+      assert_range_matrix_class(m, gc.pygsheets.cell.Cell)
+      delete_test_spreadsheet()
+
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
+   df = wks_range.get_cells_dataframe(headers=False, indices=False)
+   assert list(df.columns) == [0,1,2]
+   assert list(df.index) == [0,1]
+   m = [[item for item in row] for _,row in df.iterrows()]
+   assert_range_matrix_class(m, FakePygsheetsCell)
+
+
+def test_unhashable_objects_cannot_be_extracted_as_dataframe_headers(mocker):
+   # CellExtract().default or cell object is only example so far
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range(named_index=False)
+      with pytest.raises(gs.Worksheet._Range.PrepareTableError):
+         wks_range.get_cells_dataframe(headers=True, indices=True)
+      delete_test_spreadsheet()
+   
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range(named_index=False)
+   with pytest.raises(gs.Worksheet._Range.PrepareTableError):
+      wks_range.get_cells_dataframe(headers=True, indices=True)
 
 
 # Extractions class methods are obvious and not tested
