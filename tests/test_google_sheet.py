@@ -295,3 +295,34 @@ def test_unhashable_objects_cannot_be_extracted_as_dataframe_headers(mocker):
 
 
 # Extractions class methods are obvious and not tested
+
+#### ParseTable
+
+def test_raise_error_if_table_is_not_matrix_or_dataframe(mocker):
+   table = [1,2,3] # list but not list of lists
+   assert 1==2
+
+def test_raise_error_when_table_dimensions_does_not_fit_raw_matrix(mocker):
+   assert 1==2
+
+#### ParseTable from_matrix
+
+def test_change_cells_from_matrix_without_headers_without_indices(mocker):
+   assert 1==2
+
+def test_change_values_from_matrix_with_headers_with_indices(mocker):
+   assert 1==2
+ 
+#### ParseTable from_dataframe
+
+def test_change_values_from_dataframe_with_header_with_indices(mocker):
+   assert 1==2
+
+def test_change_values_from_dataframe_with_headers_without_indices(mocker):
+   assert 1==2
+
+def test_change_colors_from_dataframe_without_headers_with_indices(mocker):
+   assert 1==2
+
+def test_change_cells_from_dataframe_without_header_without_indices(mocker):
+   assert 1==2

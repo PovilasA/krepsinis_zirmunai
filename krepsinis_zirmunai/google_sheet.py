@@ -79,12 +79,6 @@ class Worksheet:
 
       class PrepareTableError(Exception):
          pass     
-            pass
-         pass     
-            pass
-         pass     
-            pass
-         pass     
 
       class CellExtract:
          default = lambda x: x
@@ -147,6 +141,10 @@ class Worksheet:
 
       class CellAssign:
          def raw_value(cell, value): cell.value = value; return(cell)
+         def default(cell, new_cell): cell = new_cell; return(cell)
+         def raw_value(cell, new_value): cell.value = new_value; return(cell)
+         def color(cell, new_color): cell.color = new_color; return(cell)
+         def text_format(cell, new_text_format): cell.text_format = new_text_format; return(cell)
 
       class ParseTable:
          # probably assign_format is not needed!
@@ -154,7 +152,7 @@ class Worksheet:
             self.table = table
             self.headers = headers
             self.indices = indices
-            self.validate_table()
+            self.table_format = self.validate_table()
 
          def validate_table(self):
             pass
@@ -163,7 +161,16 @@ class Worksheet:
       class ParseTableError(Exception):
          pass
 
-      def set(self):
+      def change_cells(self, table, headers=True, indices=False):
+         pass
+
+      def change_values(self, table, headers=True, indices=False):
+         pass
+
+      def change_colors(self, table, headers=True, indices=False):
+         pass
+
+      def set_changes(self):
          self.pygsheets_worksheet.update_cells(self.string_range, self.new_matrix)
          # TODO as mentioned in method change() this function might be updated
          # to change cells one-by-one and use mapping which cells to change 
