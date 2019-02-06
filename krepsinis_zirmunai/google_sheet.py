@@ -128,11 +128,11 @@ class Worksheet:
 
       def change(self, method, headers, indices, table):
          method = getattr(self.CellAssign, method)
-         values = self.ParseTable(table, headers, indices, self.raw_matrix)
+         parsed_matrix = self.ParseTable(table, headers, indices, self.raw_matrix).output_table()
          # check dimensions of raw_matrix and table!
          # check table format!
          self.new_matrix = [[method(x_ij, v_ij) for x_ij,v_ij in zip(x_i,v_i)] 
-                           for x_i,v_i in zip(self.raw_matrix, values)]
+                           for x_i,v_i in zip(self.raw_matrix, parsed_matrix)]
          return(self)
          # TODO cells might be updated one-by-one (not all at once). For that
          # good idea would to track which cells were changed and then really 
@@ -155,6 +155,7 @@ class Worksheet:
             self.raw_matrix = raw_matrix
             self.table_is_dataframe = None
             self.table_is_matrix = None
+            self.parsed_table = None
             self.table_format = self.validate_table()
 
          def validate_table(self):
@@ -185,22 +186,43 @@ class Worksheet:
 
          def table_dimensions(self):
             if self.is_dataframe():
-               dim = self.table.shape
+               dim = list(self.table.shape)
+               if not self.headers:
+                  dim[0] = dim[0] + 1
+               if not self.indices:
+                  dim[1] = dim[1] + 1
+            if self.is_matrix():
+               # Here we already know that table is "matrix" - list of lists with same sizes
+               dim = [len(self.table),len(self.table[0])]
                if self.headers:
                   dim[0] = dim[0] - 1
                if self.indices:
                   dim[1] = dim[1] - 1
-            if self.is_matrix():
-               # Here we already know that table is "matrix" - list of lists with same sizes
-               dim = (len(self.table),len(self.table[0]))
-            return(list(dim))
+            return(dim)
 
+         def output_table(self):
+            parsed_table = self.table
+            if self.is_dataframe():
+               if self.indices:
+                  parsed_table = parsed_table.reset_index()
+               if self.headers:
+                  parsed_table.loc[-1] = list(parsed_table.columns)  # adding a row
+                  parsed_table.index = parsed_table.index + 1  # shifting index
+                  parsed_table = parsed_table.sort_index()  # sorting by index
+               parsed_table = parsed_table.values.tolist()
+            if self.is_matrix():
+               if self.headers:
+                  parsed_table = parsed_table[1:]
+               if self.indices:
+                  parsed_table = [x_i[1:] for x_i in parsed_table]
+            self.parsed_table = parsed_table
+            return(parsed_table)
 
       class ParseTableError(Exception):
          pass
 
       def change_cells(self, table, headers=True, indices=False):
-         pass
+         return(self.change('default', headers, indices, table))
 
       def change_values(self, table, headers=True, indices=False):
          return(self.change('raw_value', headers, indices, table))
