@@ -167,7 +167,8 @@ def mock_gs_range(mocker, matrix_dim = [2,3]):
    mocker.patch.object(worksheet_mock, 'range')
    mocker.patch.object(worksheet_mock, 'title')
    mocker.patch.object(spreadsheet_mock, 'title')
-   worksheet_mock.range.return_value = [[FakePygsheetsCell()]*matrix_dim[1]]*matrix_dim[0]
+   worksheet_mock.range.return_value = [[FakePygsheetsCell() for x_ij in range(matrix_dim[1])] 
+                                         for x_i in range(matrix_dim[0])]
    worksheet_mock.title = 'worksheet_title'
    spreadsheet_mock.title = 'spreadsheet_title'
    return(worksheet_mock)
@@ -343,15 +344,43 @@ def test_raise_error_when_table_dimensions_does_not_fit_raw_matrix(mocker):
    with pytest.raises(gs.Worksheet._Range.ParseTableError):
       wks_range.change_values(table, headers=False, indices=False)
 
-def test_returns_self(mocker):
-   assert 1==2
 #### ParseTable from_matrix
 
 def test_change_cells_from_matrix_without_headers_without_indices(mocker):
-   assert 1==2
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range()
+      table = [[FakePygsheetsCell()]*3]*2
+      wks_range.change_cells(table, headers=False, indices=False)
+      assert_range_matrix_class(wks_range.new_matrix, FakePygsheetsCell)
+      delete_test_spreadsheet()
+
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
+   table = [[FakePygsheetsCell()]*3]*2
+   wks_range.change_cells(table, headers=False, indices=False)
+   assert_range_matrix_class(wks_range.new_matrix, FakePygsheetsCell)
 
 def test_change_values_from_matrix_with_headers_with_indices(mocker):
-   assert 1==2
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range()
+      table = [['header','header','header','header'],
+               ['11','12','13','14'],['21','22','23','24']]
+      wks_range.change_values(table, headers=True, indices=True)
+      new_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.new_matrix]
+      assert_range_matrix_class(wks_range.new_matrix, gc.pygsheets.cell.Cell)
+      assert new_values == [['12','13','14'],['22','23','24']]
+      delete_test_spreadsheet()
+
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
+   table = [['header','header','header','header'],
+            ['11','12','13','14'],['21','22','23','24']]
+   wks_range.change_values(table, headers=True, indices=True)
+   new_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.new_matrix]
+   assert_range_matrix_class(wks_range.new_matrix, FakePygsheetsCell)
+   assert new_values == [['12','13','14'],['22','23','24']]
  
 #### ParseTable from_dataframe
 
