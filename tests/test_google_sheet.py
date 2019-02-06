@@ -299,12 +299,52 @@ def test_unhashable_objects_cannot_be_extracted_as_dataframe_headers(mocker):
 #### ParseTable
 
 def test_raise_error_if_table_is_not_matrix_or_dataframe(mocker):
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range()
+      table = [1,2,3] # list but not list of lists
+      with pytest.raises(gs.Worksheet._Range.ParseTableError):
+         wks_range.change_values(table)
+      delete_test_spreadsheet()   
+   
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
    table = [1,2,3] # list but not list of lists
-   assert 1==2
+   with pytest.raises(gs.Worksheet._Range.ParseTableError):
+      wks_range.change_values(table)
+
+def test_raise_error_when_matrix_elements_are_not_equal_length(mocker):
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range()
+      table = [[1,2,3],[1,2]] # list of lists but not equal lengths
+      with pytest.raises(gs.Worksheet._Range.ParseTableError):
+         wks_range.change_values(table)
+      delete_test_spreadsheet()   
+   
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
+   table = [[1,2,3],[1,2]] # list of lists but not equal lengths
+   with pytest.raises(gs.Worksheet._Range.ParseTableError):
+      wks_range.change_values(table)
 
 def test_raise_error_when_table_dimensions_does_not_fit_raw_matrix(mocker):
-   assert 1==2
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range()
+      table = [[1,2],[1,2]] # list of lists but dimensions not equal to raw_matrix dimensions
+      with pytest.raises(gs.Worksheet._Range.ParseTableError):
+         wks_range.change_values(table, headers=False, indices=False)
+      delete_test_spreadsheet()
 
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
+   table = [[1,2],[1,2]] # list of lists but dimensions not equal to raw_matrix dimensions
+   with pytest.raises(gs.Worksheet._Range.ParseTableError):
+      wks_range.change_values(table, headers=False, indices=False)
+
+def test_returns_self(mocker):
+   assert 1==2
 #### ParseTable from_matrix
 
 def test_change_cells_from_matrix_without_headers_without_indices(mocker):
