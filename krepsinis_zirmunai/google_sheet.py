@@ -126,9 +126,9 @@ class Worksheet:
 
 
 
-      def change(self, method, assign_format, headers, indices, table):
+      def change(self, method, headers, indices, table):
          method = getattr(self.CellAssign, method)
-         values = self.ParseTable(table, headers, indices)
+         values = self.ParseTable(table, headers, indices, self.raw_matrix)
          # check dimensions of raw_matrix and table!
          # check table format!
          self.new_matrix = [[method(x_ij, v_ij) for x_ij,v_ij in zip(x_i,v_i)] 
@@ -148,15 +148,53 @@ class Worksheet:
 
       class ParseTable:
          # probably assign_format is not needed!
-         def __init__(self, table, headers, indices):
+         def __init__(self, table, headers, indices, raw_matrix):
             self.table = table
             self.headers = headers
             self.indices = indices
+            self.raw_matrix = raw_matrix
+            self.table_is_dataframe = None
+            self.table_is_matrix = None
             self.table_format = self.validate_table()
 
          def validate_table(self):
-            pass
-            # Throw ParseTableError
+            if not self.is_dataframe() and not self.is_matrix():
+               m = 'Given table format is not acceptable! It is not a matrix (list of lists) or dataframe!'
+               raise Worksheet._Range.ParseTableError(m)
+            expected_dim = [len(self.raw_matrix),len(self.raw_matrix[0])]
+            actual_dim = self.table_dimensions()
+            if expected_dim != actual_dim:
+               m = 'Given table dimensions (%s) are not the same as raw_matrix dimensions!' % actual_dim
+               raise Worksheet._Range.ParseTableError(m)
+            return('dataframe' if self.is_dataframe() else 'matrix')
+         
+         def is_dataframe(self):
+            if self.table_is_dataframe is None:
+               self.table_is_dataframe = isinstance(self.table, pd.DataFrame)
+            return(self.table_is_dataframe)
+
+         def is_matrix(self):
+            if self.table_is_matrix is None:
+               self.table_is_matrix = False
+               if isinstance(self.table, list):
+                  if all(isinstance(x, list) for x in self.table):
+                     lengths = [len(x) for x in self.table]
+                     if len(list(set(lengths))) == 1:
+                        self.table_is_matrix = True         
+            return(self.table_is_matrix)
+
+         def table_dimensions(self):
+            if self.is_dataframe():
+               dim = self.table.shape
+               if self.headers:
+                  dim[0] = dim[0] - 1
+               if self.indices:
+                  dim[1] = dim[1] - 1
+            if self.is_matrix():
+               # Here we already know that table is "matrix" - list of lists with same sizes
+               dim = (len(self.table),len(self.table[0]))
+            return(list(dim))
+
 
       class ParseTableError(Exception):
          pass
@@ -165,7 +203,7 @@ class Worksheet:
          pass
 
       def change_values(self, table, headers=True, indices=False):
-         pass
+         return(self.change('raw_value', headers, indices, table))
 
       def change_colors(self, table, headers=True, indices=False):
          pass
