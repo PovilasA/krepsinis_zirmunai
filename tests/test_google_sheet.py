@@ -137,7 +137,7 @@ def test_Range_function_initialize_Range_class(mocker):
    assert wks_range.spreadsheet_name == 'spreadsheet_title'
    assert wks_range.worksheet_name == 'worksheet_title'
    assert wks_range.string_range == 'A1:C2'
-   assert wks_range.new_matrix == None
+   assert_range_matrix_class(wks_range.new_matrix, FakePygsheetsCell)
    assert_range_matrix_class(wks_range.raw_matrix, FakePygsheetsCell)
    wks.worksheet.range.assert_called_with('A1:C2', 'cells')
 
@@ -384,14 +384,173 @@ def test_change_values_from_matrix_with_headers_with_indices(mocker):
  
 #### ParseTable from_dataframe
 
-def test_change_values_from_dataframe_with_header_with_indices(mocker):
-   assert 1==2
+def test_change_values_from_dataframe_with_headers_with_indices(mocker):
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range()
+      table = gs.pd.DataFrame({'header1':['11','21'],
+                              'header2':['12','22'],
+                              'header3':['13','23']})
+      wks_range.change_values(table, headers=True, indices=True)
+      new_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.new_matrix]
+      assert_range_matrix_class(wks_range.new_matrix, gc.pygsheets.cell.Cell)
+      assert new_values == [['11','12','13'],['21','22','23']]
+      delete_test_spreadsheet()
+
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
+   table = gs.pd.DataFrame({'header1':['11','21'],
+                            'header2':['12','22'],
+                            'header3':['13','23']})
+   wks_range.change_values(table, headers=True, indices=True)
+   new_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.new_matrix]
+   assert_range_matrix_class(wks_range.new_matrix, FakePygsheetsCell)
+   assert new_values == [['11','12','13'],['21','22','23']]
 
 def test_change_values_from_dataframe_with_headers_without_indices(mocker):
-   assert 1==2
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range()
+      table = gs.pd.DataFrame({'index':['11','21'],
+                               'header2':['12','22'],
+                               'header3':['13','23']}).set_index('index')
+      wks_range.change_values(table, headers=True, indices=False)
+      new_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.new_matrix]
+      assert_range_matrix_class(wks_range.new_matrix, gc.pygsheets.cell.Cell)
+      assert new_values == [['11','12','13'],['21','22','23']]
+      delete_test_spreadsheet()
+
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
+   table = gs.pd.DataFrame({'index':['11','21'],
+                            'header2':['12','22'],
+                            'header3':['13','23']}).set_index('index')
+   wks_range.change_values(table, headers=True, indices=False)
+   new_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.new_matrix]
+   assert_range_matrix_class(wks_range.new_matrix, FakePygsheetsCell)
+   assert new_values == [['11','12','13'],['21','22','23']]
 
 def test_change_colors_from_dataframe_without_headers_with_indices(mocker):
-   assert 1==2
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range()
+      color = lambda x: (x/100, 1, 0, 0)
+      table = gs.pd.DataFrame({color(1):[color(11)],
+                              color(2):[color(12)],
+                              color(3):[color(13)]})
+      wks_range.change_colors(table, headers=False, indices=True)
+      new_colors = [[x_ij.color for x_ij in x_i] for x_i in wks_range.new_matrix]
+      assert_range_matrix_class(wks_range.new_matrix, gc.pygsheets.cell.Cell)
+      assert new_colors == [[color(1),color(2),color(3)],[color(11),color(12),color(13)]]
+      delete_test_spreadsheet()
 
-def test_change_cells_from_dataframe_without_header_without_indices(mocker):
-   assert 1==2
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
+   color = lambda x: (x/100, 1, 0, 0)
+   table = gs.pd.DataFrame({color(1):[color(11)],
+                            color(2):[color(12)],
+                            color(3):[color(13)]})
+   wks_range.change_colors(table, headers=False, indices=True)
+   new_colors = [[x_ij.color for x_ij in x_i] for x_i in wks_range.new_matrix]
+   assert_range_matrix_class(wks_range.new_matrix, FakePygsheetsCell)
+   assert new_colors == [[color(1),color(2),color(3)],[color(11),color(12),color(13)]]
+
+def test_change_values_from_dataframe_without_headers_without_indices(mocker):
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range()
+      table = gs.pd.DataFrame({'header1':['11'],
+                              'header2':['12'],
+                              'header3':['13']}).set_index('header1')
+      wks_range.change_values(table, headers=False, indices=False)
+      new_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.new_matrix]
+      assert_range_matrix_class(wks_range.new_matrix, gc.pygsheets.cell.Cell)
+      assert new_values == [['header1','header2','header3'],['11','12','13']]
+      delete_test_spreadsheet()
+
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
+   table = gs.pd.DataFrame({'header1':['11'],
+                            'header2':['12'],
+                            'header3':['13']}).set_index('header1')
+   wks_range.change_values(table, headers=False, indices=False)
+   new_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.new_matrix]
+   assert_range_matrix_class(wks_range.new_matrix, FakePygsheetsCell)
+   assert new_values == [['header1','header2','header3'],['11','12','13']]
+
+#### change Returns self (_Range object)
+
+def test_change_method_returns_Range_object(mocker):
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range()
+      table = [[1,2,3],[1,2,3]]
+      result = wks_range.change('raw_value',headers=False, indices=False, table=table)
+      assert isinstance(result, gs.Worksheet._Range)
+      delete_test_spreadsheet()
+
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
+   table = [[1,2,3],[1,2,3]]
+   result = wks_range.change('raw_value',headers=False, indices=False, table=table)
+   assert isinstance(result, gs.Worksheet._Range)
+
+def test_raw_matrix_is_unchanged_after_change_is_called(mocker):
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range()
+      table = [[1,2,3],[1,2,3]]
+      old_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.raw_matrix]
+      wks_range.change('raw_value',headers=False, indices=False, table=table)
+      new_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.raw_matrix]
+      assert new_values == [['index_name', 'value_B1', ''], ['1', '2', '']]
+      assert old_values == new_values
+      delete_test_spreadsheet()
+
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
+   # cheat to make raw_matrix and new_matrix different objects
+   import copy; wks_range.new_matrix = copy.deepcopy(wks_range.raw_matrix)
+   table = [[1,2,3],[1,2,3]]
+   old_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.raw_matrix]
+   wks_range.change('raw_value',headers=False, indices=False, table=table)
+   new_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.raw_matrix]
+   assert new_values == [['no_value']*3]*2
+   assert old_values == new_values
+
+def test_second_change_does_not_override_first_change(mocker):
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range()
+      values_table = gs.pd.DataFrame({'header1':['11','21'],
+                                        'header2':['12','22'],
+                                        'header3':['13','23']})
+      wks_range.change_values(values_table, headers=True, indices=True)
+      color = lambda x: (x/100, 1, 0, 0)
+      colors_table = gs.pd.DataFrame({color(1):[color(11),color(21)],
+                              color(2):[color(12),color(22)],
+                              color(3):[color(13),color(23)]})
+      wks_range.change_colors(colors_table, headers=True, indices=True)
+      new_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.new_matrix]
+      new_colors = [[x_ij.color for x_ij in x_i] for x_i in wks_range.new_matrix]
+      assert new_values == [['11','12','13'],['21','22','23']]
+      assert new_colors == [[color(11),color(12),color(13)],
+                            [color(21),color(22),color(23)]]
+      delete_test_spreadsheet()
+
+   # Offline test
+   mock_gs_range(mocker)
+   wks_range = create_range()
+   values_table = gs.pd.DataFrame({'header1':['11','21'],
+                                    'header2':['12','22'],
+                                    'header3':['13','23']})
+   wks_range.change_values(values_table, headers=True, indices=True)
+   color = lambda x: (x/100, 1, 0, 0)
+   colors_table = gs.pd.DataFrame({color(1):[color(11),color(21)],
+                           color(2):[color(12),color(22)],
+                           color(3):[color(13),color(23)]})
+   wks_range.change_colors(colors_table, headers=True, indices=True)
+   new_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.new_matrix]
+   new_colors = [[x_ij.color for x_ij in x_i] for x_i in wks_range.new_matrix]
+   assert new_values == [['11','12','13'],['21','22','23']]
+   assert new_colors == [[color(11),color(12),color(13)],
+                        [color(21),color(22),color(23)]]

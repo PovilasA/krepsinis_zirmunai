@@ -32,7 +32,9 @@ class Worksheet:
          self.worksheet_name = worksheet_self.worksheet.title
          self.string_range = string_range
          self.raw_matrix = worksheet_self.worksheet.range(string_range, 'cells')
-         self.new_matrix = None
+         self.new_matrix = worksheet_self.worksheet.range(string_range, 'cells')
+         # new_matrix is the same as raw_matrix but later new_matrix will be 
+         # changed and raw_matrix is NEVER changed
 
       def extract(self, method, extract_format, headers, indices):
          method = getattr(self.CellExtract, method)
@@ -132,7 +134,7 @@ class Worksheet:
          # check dimensions of raw_matrix and table!
          # check table format!
          self.new_matrix = [[method(x_ij, v_ij) for x_ij,v_ij in zip(x_i,v_i)] 
-                           for x_i,v_i in zip(self.raw_matrix, parsed_matrix)]
+                           for x_i,v_i in zip(self.new_matrix, parsed_matrix)]
          return(self)
          # TODO cells might be updated one-by-one (not all at once). For that
          # good idea would to track which cells were changed and then really 
@@ -203,9 +205,9 @@ class Worksheet:
          def output_table(self):
             parsed_table = self.table
             if self.is_dataframe():
-               if self.indices:
+               if not self.indices:
                   parsed_table = parsed_table.reset_index()
-               if self.headers:
+               if not self.headers:
                   parsed_table.loc[-1] = list(parsed_table.columns)  # adding a row
                   parsed_table.index = parsed_table.index + 1  # shifting index
                   parsed_table = parsed_table.sort_index()  # sorting by index
@@ -221,14 +223,14 @@ class Worksheet:
       class ParseTableError(Exception):
          pass
 
-      def change_cells(self, table, headers=True, indices=False):
+      def change_cells(self, table, headers=True, indices=True):
          return(self.change('default', headers, indices, table))
 
-      def change_values(self, table, headers=True, indices=False):
+      def change_values(self, table, headers=True, indices=True):
          return(self.change('raw_value', headers, indices, table))
 
-      def change_colors(self, table, headers=True, indices=False):
-         pass
+      def change_colors(self, table, headers=True, indices=True):
+         return(self.change('color', headers, indices, table))
 
       def set_changes(self):
          self.pygsheets_worksheet.update_cells(self.string_range, self.new_matrix)
