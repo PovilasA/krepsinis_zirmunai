@@ -554,3 +554,29 @@ def test_second_change_does_not_override_first_change(mocker):
    assert new_values == [['11','12','13'],['21','22','23']]
    assert new_colors == [[color(11),color(12),color(13)],
                         [color(21),color(22),color(23)]]
+
+#### set_changes THIS TEST IS TEMPORARY USELESS. 
+# UNTIL TODO IN set_changes() WILL BE DONE
+
+def test_set_changes(mocker):
+   if RUN_ONLINE_TESTS:
+      wks_range = create_range()
+      values_table = gs.pd.DataFrame({'header1':['11','21'],
+                                        'header2':['12','22'],
+                                        'header3':['13','23']})
+      wks_range.change_values(values_table, headers=True, indices=True)
+      color = lambda x: (x/100, 1, 0, 0)
+      colors_table = gs.pd.DataFrame({color(1):[color(20),color(40)],
+                              color(2):[color(60),color(80)],
+                              color(3):[color(0),color(100)]})
+      wks_range.change_colors(colors_table, headers=True, indices=True)
+      wks_range.set_changes()
+      updated_worksheet = gs.Worksheet(client, test_spreadsheet_name, 'Sheet1')
+      updated_range = updated_worksheet.Range('A1:C2')
+      updated_values = [[x_ij.value for x_ij in x_i] for x_i in updated_range.raw_matrix]
+      updated_colors = [[x_ij.color for x_ij in x_i] for x_i in updated_range.raw_matrix]
+      assert updated_values == [['11','12','13'],['21','22','23']]
+      assert updated_colors == [[color(20),color(60),color(0)],
+                                [color(40),color(80),color(100)]]
+   # Offline test
+   # TODO when TODO in set_changes() will be done

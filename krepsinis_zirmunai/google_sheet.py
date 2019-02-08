@@ -233,7 +233,18 @@ class Worksheet:
          return(self.change('color', headers, indices, table))
 
       def set_changes(self):
-         self.pygsheets_worksheet.update_cells(self.string_range, self.new_matrix)
+         pass
+         
+         # TODO set_changes does not do anything at the moment. All changing 
+         # part is being done in change() part instantly. There is a plan to fix 
+         # this and apply changes only with set_changes(). Possible solution for
+         # that could be to replace self.new_matrix with new class NewMatrix or 
+         # new class NewCell. This class would have common methods like .value; 
+         # .color and others (the same as pygsheets cell object). NewMatrix 
+         # would be changed using change() and later those changes would be 
+         # applied to worksheet using set_changes(). After this will be done 
+         # test_set_changes() should also be updated with offline functionality.
+         
          # TODO as mentioned in method change() this function might be updated
          # to change cells one-by-one and use mapping which cells to change 
          # created by change() method
