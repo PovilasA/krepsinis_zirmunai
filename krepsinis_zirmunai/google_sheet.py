@@ -87,6 +87,10 @@ class Worksheet:
          raw_value = lambda x: x.value
          color = lambda x: x.color
          text_format = lambda x: x.text_format
+         wrap_strategy = lambda x: x.wrap_strategy
+         borders = lambda x: x.borders
+         formula = lambda x: x.formula
+         horizontal_alignment = lambda x: x.horizontal_alignment
          # More could be specified in the future. These functions are not tested!
 
 
@@ -142,11 +146,29 @@ class Worksheet:
          # important that's why I skipped that. At least for a while.
 
       class CellAssign:
-         def raw_value(cell, value): cell.value = value; return(cell)
          def default(cell, new_cell): cell = new_cell; return(cell)
          def raw_value(cell, new_value): cell.value = new_value; return(cell)
          def color(cell, new_color): cell.color = new_color; return(cell)
          def text_format(cell, new_text_format): cell.text_format = new_text_format; return(cell)
+            
+         def wrap_strategy(cell, new_wrap_strategy): 
+            # Example: new_wrap_strategy in ['WRAP_STRATEGY_UNSPECIFIED','OVERFLOW_CELL','LEGACY_WRAP','CLIP','WRAP']
+            cell.wrap_strategy = new_wrap_strategy; return(cell)
+
+         def borders(cell, new_borders): 
+            # borders example:
+            # {'bottom': {'color': {}, 'style': 'SOLID', 'width': 1},
+            #  'left': {'color': {}, 'style': 'SOLID', 'width': 1},
+            #  'right': {'color': {}, 'style': 'SOLID', 'width': 0},
+            #  'top': {'color': {}, 'style': 'SOLID', 'width': 1}}
+            cell.borders = new_borders; update(cell); return(cell)
+
+         def formula(cell, new_formula): cell.formula = new_formula; return(cell)
+
+         def horizontal_alignment(cell, new_hor_align):
+            # Example: new_hor_align in '[CENTER','RIGHT','LEFT']
+            cell.horizontal_alignment = gc.pygsheets.custom_types.HorizontalAlignment(new_hor_align)
+            return(cell)
 
       class ParseTable:
          # probably assign_format is not needed!

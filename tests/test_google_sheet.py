@@ -578,5 +578,6 @@ def test_set_changes(mocker):
       assert updated_values == [['11','12','13'],['21','22','23']]
       assert updated_colors == [[color(20),color(60),color(0)],
                                 [color(40),color(80),color(100)]]
+      delete_test_spreadsheet()
    # Offline test
    # TODO when TODO in set_changes() will be done
