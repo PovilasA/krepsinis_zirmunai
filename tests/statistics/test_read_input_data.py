@@ -23,7 +23,7 @@ def delete_test_spreadsheet():
    client.open(test_spreadsheet_name).delete()
 
 def read_mock_table(file_name, format='matrix'):
-   with open('tests/statistics/' + file_name, 'r') as f:
+   with open('tests/statistics/helper_tables/' + file_name, 'r') as f:
       reader = csv.reader(f)
       matrix = list(reader)
    matrix = [item[0].replace('ļ»æ','').split(';') for item in matrix]
