@@ -2,7 +2,6 @@ from krepsinis_zirmunai import google_client as gc
 
 from mock import call
 import pytest
-from pytest_mock import mocker 
 
 from tests.run_online_tests import *
 

@@ -2,64 +2,14 @@ from krepsinis_zirmunai import google_client as gc
 from krepsinis_zirmunai import google_sheet as gs
 from krepsinis_zirmunai.statistics.read_input_data import *
 
-from mock import call, MagicMock
-import pytest
-from pytest_mock import mocker 
-
-import csv
 from freezegun import freeze_time
 
 from tests.run_online_tests import *
+from tests.helpers.helper_methods import *
+from tests.helpers.mocks import *
 
 client = gc.Pygsheets().authenticate().get_client()
 test_spreadsheet_name ='krepsinis_zirmunai_test_spreadsheet'
-
-def create_test_spreadsheet(named_index=False):
-   spreadsheet = client.create(test_spreadsheet_name)
-   worksheet = spreadsheet.worksheet_by_title('Sheet1')
-   return(spreadsheet, worksheet)
-
-def delete_test_spreadsheet():
-   client.open(test_spreadsheet_name).delete()
-
-def read_mock_table(file_name, format='matrix'):
-   with open('tests/statistics/helper_tables/' + file_name, 'r') as f:
-      reader = csv.reader(f)
-      matrix = list(reader)
-   matrix = [item[0].replace('ļ»æ','').split(';') for item in matrix]
-   if format == 'matrix':
-      return(matrix)
-   elif format == 'dataframe':
-      headers = matrix[0][1:] 
-      rows = [v[0] for v in matrix][1:]
-      matrix = [v[1:] for v in matrix]
-      matrix = matrix[1:]
-      df = pd.DataFrame(matrix, columns=headers, index=rows)
-      df = df.apply(pd.to_numeric, errors='coerce')
-      return(df)
-
-def mock_gs_worksheet(mocker):
-   spreadsheet_mock = MagicMock()
-   worksheet_mock = MagicMock()
-
-   mocker.patch.object(client, 'open')
-   client.open.return_value = spreadsheet_mock
-
-   mocker.patch.object(client, 'create')
-   client.create.return_value = spreadsheet_mock
-
-   mocker.patch.object(spreadsheet_mock, 'worksheet_by_title')
-   spreadsheet_mock.worksheet_by_title.return_value = worksheet_mock
-
-   return(spreadsheet_mock, worksheet_mock)
-
-def mock_read_input_data(mocker, read_input_data_object):
-   values = read_mock_table('raw_statistics_example_values.csv')
-   colors = read_mock_table('raw_statistics_example_colors.csv')
-   read_input_data_object.values_matrix = values
-   read_input_data_object.colors_matrix = colors
-   return(read_input_data_object)
-
 
 def test_find_string_range(mocker):
    matrix = [['','','','',''],
@@ -71,7 +21,7 @@ def test_find_string_range(mocker):
 
 def test_init(mocker):
    if RUN_ONLINE_TESTS:
-      _, worksheet = create_test_spreadsheet()
+      _, worksheet = create_test_spreadsheet(client, insert_values=False)
       worksheet.cell('C3').value = 11
       worksheet.cell('D4').value = 11
       worksheet.cell('E5').value = 11
@@ -95,10 +45,10 @@ def test_init(mocker):
                 [n,n,n,n,v],
                 [v,n,n,n,n]]
       assert input.colors_matrix == matrix
-      delete_test_spreadsheet()
+      delete_test_spreadsheet(client)
 
    # Offline test
-   spreadsheet_mock, worksheet_mock = mock_gs_worksheet(mocker)
+   spreadsheet_mock, worksheet_mock = mock_gs_worksheet(client, mocker)
    matrix = [['','','11','',''],
              ['','','','11',''],
              ['','','','','11'],
@@ -114,7 +64,7 @@ def test_init(mocker):
 
 @freeze_time("2019-02-20")
 def test_parse(mocker):
-   mock_gs_worksheet(mocker)
+   mock_gs_worksheet(client, mocker)
    input = ReadInputData(client, test_spreadsheet_name, 'Sheet1')
    mock_read_input_data(mocker, input)
    parsed_df = input.parse()
