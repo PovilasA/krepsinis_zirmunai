@@ -22,6 +22,22 @@ def create_test_spreadsheet(named_index=False):
 def delete_test_spreadsheet():
    client.open(test_spreadsheet_name).delete()
 
+def read_mock_table(file_name, format='matrix'):
+   with open('tests/statistics/' + file_name, 'r') as f:
+      reader = csv.reader(f)
+      matrix = list(reader)
+   matrix = [item[0].replace('ļ»æ','').split(';') for item in matrix]
+   if format == 'matrix':
+      return(matrix)
+   elif format == 'dataframe':
+      headers = matrix[0][1:] 
+      rows = [v[0] for v in matrix][1:]
+      matrix = [v[1:] for v in matrix]
+      matrix = matrix[1:]
+      df = pd.DataFrame(matrix, columns=headers, index=rows)
+      df = df.apply(pd.to_numeric, errors='coerce')
+      return(df)
+
 def mock_gs_worksheet(mocker):
    spreadsheet_mock = MagicMock()
    worksheet_mock = MagicMock()
@@ -36,6 +52,13 @@ def mock_gs_worksheet(mocker):
    spreadsheet_mock.worksheet_by_title.return_value = worksheet_mock
 
    return(spreadsheet_mock, worksheet_mock)
+
+def mock_read_input_data(mocker, read_input_data_object):
+   values = read_mock_table('raw_statistics_example_values.csv')
+   colors = read_mock_table('raw_statistics_example_colors.csv')
+   read_input_data_object.values_matrix = values
+   read_input_data_object.colors_matrix = colors
+   return(read_input_data_object)
 
 
 def test_find_string_range(mocker):
@@ -88,3 +111,13 @@ def test_init(mocker):
    assert input.values_matrix == []
    assert input.colors_matrix == []
    assert input.top_values == 12
+
+@freeze_time("2019-02-20")
+def test_parse(mocker):
+   mock_gs_worksheet(mocker)
+   input = ReadInputData(client, test_spreadsheet_name, 'Sheet1')
+   mock_read_input_data(mocker, input)
+   parsed_df = input.parse()
+   parsed_df_correct = read_mock_table('parsed_input_table.csv', format='dataframe')
+   assert parsed_df.shape == (12,24)
+   assert parsed_df.equals(parsed_df_correct)
