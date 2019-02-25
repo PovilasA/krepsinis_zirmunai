@@ -21,3 +21,11 @@ def create_test_spreadsheet(named_index=False):
 
 def delete_test_spreadsheet():
    client.open(test_spreadsheet_name).delete()
+
+def test_find_string_range(mocker):
+   matrix = [['','','','',''],
+             ['',11,11,'',''],
+             ['','','',11,''],
+             [11,'','','',''],
+             ['','','','','']]
+   assert find_string_range(matrix) == 'A2:D4'
