@@ -16,13 +16,12 @@ class IndividualSummary:
          result = pd.DataFrame(index = self.parsed_input.index)
          result['Sužaista'] = self.games_played()
          result['Laimėta-Pralaimėta'] = self.won_and_lost()
-         # from IPython import embed; embed()
          result['Taškų santykis'] = self.point_difference()
          result['Paskutiniai 5 kartai'] = self.last_5_record()
          result['Paskutiniai 5 kartai (be praleidimų)'] = self.last_5_record_wo_absence()
          result['Taškų santykis per paskutinius 5 kartus'] = self.point_difference_last_5()
          result['Serija'] = self.streak()
-         # result['Serija (be praleidimų)'] = self.streak_wo_absence()
+         result['Serija (be praleidimų)'] = self.streak_wo_absence()
          return(result)
 
       # Column 'Sužaista'
@@ -56,7 +55,78 @@ class IndividualSummary:
       def point_difference_last_5(self):
          p = [sum(row.dropna()[-5:]) for _,row in self.parsed_input.iterrows()]
          return(point_difference_to_plus_minus(p))
+
+      # Column 'Serija'
+      def streak(self):
+         return([self.__individual_streak(row) for _,row in self.parsed_input.iterrows()])
+
+      # Column 'Serija (be praleidimų)'
+      def streak_wo_absence(self):
+         return([self.__individual_streak(row.dropna()) for _,row in self.parsed_input.iterrows()])
+
+      def __individual_streak(self, list):
+         streaks_count = IndividualSummary._Values.Streaks(list).get()
+         longest_streak_types = [k for k,v in streaks_count.items() if v == max(streaks_count.values())]
          
+         priority = {'win':6,'lose':5,'draw':4,'not_lost':3,'not_win':2,'absence':1}
+         state_dict = {'win':"Laimėjo",
+                       'lose':"Pralaimėjo",
+                       'draw':'Lygiosios',
+                       'not_lost':'Nepralaimėjo',
+                       'not_win':'Nelaimėjo',
+                       'absence':'Nebuvo'}
+         
+         longest_streaks_dict = {k:v for k,v in priority.items() if k in longest_streak_types}
+         one_longest_streak = [k for k,v in longest_streaks_dict.items() if v == max(longest_streaks_dict.values())]
+         result = state_dict[one_longest_streak[0]] + ' ' + str(streaks_count[one_longest_streak[0]])
+         return(result)
+      
+      class Streaks:
+         def __init__(self, list):
+            self.list = list[::-1]
+
+         def get(self):
+            return({
+               'win': self.__win_streak(),
+               'lose': self.__lose_streak(),
+               'not_lost': self.__not_lose_streak(),
+               'not_win': self.__not_win_streak(),
+               'draw': self.__draw_streak(),
+               'absence': self.__absence_streak()
+            })
+
+         def find_streak_length(self, condition_method):
+            try:
+               last_ind = next(i for i, v in enumerate(self.list) if not condition_method(v))
+            except StopIteration:
+               last_ind = len(self.list)
+            return(last_ind)
+
+         def __win_streak(self):
+            f = lambda x: x > 0
+            return(self.find_streak_length(f))
+
+         def __lose_streak(self):
+            f = lambda x: x < 0
+            return(self.find_streak_length(f))
+
+         def __not_lose_streak(self):
+            f = lambda x: x >= 0
+            return(self.find_streak_length(f))
+
+         def __not_win_streak(self):
+            f = lambda x: x <= 0
+            return(self.find_streak_length(f))
+
+         def __draw_streak(self):
+            f = lambda x: x == 0
+            return(self.find_streak_length(f))
+
+         def __absence_streak(self):
+            f = lambda x: np.isnan(x)
+            return(self.find_streak_length(f))
+
+
          
 def result_to_letter(r):
    return('W' if r > 0 else 'L' if r < 0 else 'D' if r == 0  else '-')
