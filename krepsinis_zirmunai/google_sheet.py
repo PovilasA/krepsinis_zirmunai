@@ -91,6 +91,7 @@ class Worksheet:
          borders = lambda x: x.borders
          formula = lambda x: x.formula
          horizontal_alignment = lambda x: x.horizontal_alignment
+         note = lambda x: x.note if x.note is not None else ''
          # More could be specified in the future. These functions are not tested!
 
 
@@ -126,6 +127,18 @@ class Worksheet:
 
       def get_colors_dataframe(self, headers=True, indices=False):
          return(self.extract(method='color', 
+                             extract_format='dataframe',
+                             headers=headers,
+                             indices=indices))
+
+      def get_notes_matrix(self, headers=True, indices=False):
+         return(self.extract(method='note', 
+                             extract_format='matrix',
+                             headers=headers,
+                             indices=indices))
+
+      def get_notes_dataframe(self, headers=True, indices=False):
+         return(self.extract(method='note', 
                              extract_format='dataframe',
                              headers=headers,
                              indices=indices))
@@ -170,8 +183,9 @@ class Worksheet:
             cell.horizontal_alignment = gc.pygsheets.custom_types.HorizontalAlignment(new_hor_align)
             return(cell)
 
+         def note(cell, new_note): cell.note = new_note; return(cell)
+
       class ParseTable:
-         # probably assign_format is not needed!
          def __init__(self, table, headers, indices, raw_matrix):
             self.table = table
             self.headers = headers
@@ -253,6 +267,9 @@ class Worksheet:
 
       def change_colors(self, table, headers=True, indices=True):
          return(self.change('color', headers, indices, table))
+
+      def change_notes(self, table, headers=True, indices=True):
+         return(self.change('note', headers, indices, table))
 
       def set_changes(self):
          pass

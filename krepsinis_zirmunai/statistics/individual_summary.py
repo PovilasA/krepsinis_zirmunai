@@ -4,16 +4,52 @@ import numpy as np
 class IndividualSummary:
    def __init__(self, parsed_input):
       self.parsed_input = parsed_input
+      self.rows = parsed_input.index
+      self.columns = ['Sužaista','Laimėta-Pralaimėta','Taškų santykis',
+                      'Paskutiniai 5 kartai','Paskutiniai 5 kartai (be praleidimų)',
+                      'Taškų santykis per paskutinius 5 kartus','Serija',
+                      'Serija (be praleidimų)']
 
-   def Values(self):
-      return IndividualSummary._Values(self.parsed_input)
+   def Notes(self):
+      return IndividualSummary._Notes(self)
 
-   class _Values:
-      def __init__(self, parsed_input):
-         self.parsed_input = parsed_input
+   class _Notes:
+      def __init__(self, ind_sum_self):
+         self.columns = ind_sum_self.columns
+         self.rows = ind_sum_self.rows
          
       def compute(self):
-         result = pd.DataFrame(index = self.parsed_input.index)
+         text1 = "W - laimėta\n"
+         text2 = "L - pralaimėta\n"
+         text3 = "D - baigta lygiosiomis arba rezultatas neužfiksuotas\n"
+         text4 = "'-' - žaidėjo nebuvo"
+         notes_dict = {
+            '': '',
+            'Sužaista': '',
+            'Laimėta-Pralaimėta': '',
+            'Taškų santykis': '',
+            'Paskutiniai 5 kartai': text1+text2+text3,
+            'Paskutiniai 5 kartai (be praleidimų)':text1+text2+text3+text4,
+            'Taškų santykis per paskutinius 5 kartus': '',
+            'Serija': '',
+            'Serija (be praleidimų)': ''
+         }
+         notes = [['']*(len(self.columns)+1)]*(len(self.rows)+1)
+         notes[0] = list(notes_dict.keys())
+         notes[0] = [notes_dict[n] for n in notes[0]]
+         return notes
+
+   def Values(self):
+      return IndividualSummary._Values(self)
+
+   class _Values:
+      def __init__(self, ind_sum_self):
+         self.parsed_input = ind_sum_self.parsed_input
+         self.columns = ind_sum_self.columns
+         self.rows = ind_sum_self.rows
+         
+      def compute(self):
+         result = pd.DataFrame(index = self.rows, columns = self.columns)
          result['Sužaista'] = self.games_played()
          result['Laimėta-Pralaimėta'] = self.won_and_lost()
          result['Taškų santykis'] = self.point_difference()
@@ -129,8 +165,7 @@ class IndividualSummary:
 
          
 def result_to_letter(r):
-   return('W' if r > 0 else 'L' if r < 0 else 'D' if r == 0  else '-')
+   return 'W' if r > 0 else 'L' if r < 0 else 'D' if r == 0  else '-'
 
 def point_difference_to_plus_minus(list):
-   return(['+' + str(int(i)) if i > 0 else str(int(i)) for i in list])
-
+   return ['+' + str(int(i)) if i > 0 else str(int(i)) for i in list]

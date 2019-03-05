@@ -45,11 +45,15 @@ def assert_range_matrix_class(matrix, cell_class):
    assert all(isinstance(x, cell_class) for x in matrix[0])
    assert all(isinstance(x, cell_class) for x in matrix[1])
 
-def read_mock_table(file_name, format='matrix'):
+def read_mock_table(file_name, format='matrix', colors=False):
    with open('tests/statistics/helper_tables/' + file_name, 'r') as f:
       reader = csv.reader(f)
       matrix = list(reader)
    matrix = [item[0].replace('ļ»æ','').split(';') for item in matrix]
+   if colors:
+      m = (0.2901961, 0.5254902, 0.9098039, 0)
+      b = (1, 1, 1, 0)
+      matrix = [[m if i == 'm' else b if i == 'b' else i for i in item] for item in matrix]
    if format == 'matrix':
       return(matrix)
    elif format == 'dataframe':
@@ -63,7 +67,7 @@ def read_mock_table(file_name, format='matrix'):
 
 def mock_read_input_data(mocker, read_input_data_object):
    values = read_mock_table('raw_statistics_example_values.csv')
-   colors = read_mock_table('raw_statistics_example_colors.csv')
+   colors = read_mock_table('raw_statistics_example_colors.csv', colors=True)
    read_input_data_object.values_matrix = values
    read_input_data_object.colors_matrix = colors
    return(read_input_data_object)
@@ -83,8 +87,10 @@ def individual_summary_values():
       [19,'4 - 4','+29','DWWW-','DWWWL','+59', 'Nepralaimėjo 4','Nepralaimėjo 4'],
       [18,'6 - 3','+72','-LW-W','LWWLW','+56', 'Nebuvo 1','Pralaimėjo 1']
    ]
-
-   columns = ['Sužaista','Laimėta-Pralaimėta','Taškų santykis','Paskutiniai 5 kartai','Paskutiniai 5 kartai (be praleidimų)','Taškų santykis per paskutinius 5 kartus','Serija','Serija (be praleidimų)']
+   columns = ['Sužaista','Laimėta-Pralaimėta','Taškų santykis',
+              'Paskutiniai 5 kartai','Paskutiniai 5 kartai (be praleidimų)',
+              'Taškų santykis per paskutinius 5 kartus','Serija',
+              'Serija (be praleidimų)']
    player_names = [
    'Name_one ASurname_one',
    'Name_one BSurname_two',
@@ -99,6 +105,14 @@ def individual_summary_values():
    'Name_eleven Surname_eleven',
    'Name_twelwe Surname_twelve'
    ]
-
    return(pd.DataFrame(values, columns=columns, index=player_names))
 
+def individual_summary_notes():
+   text1 = "W - laimėta\n"
+   text2 = "L - pralaimėta\n"
+   text3 = "D - baigta lygiosiomis arba rezultatas neužfiksuotas\n"
+   text4 = "'-' - žaidėjo nebuvo"
+   notes = [['' for i in range(9)] for j in range(13)]
+   notes[0][4] = text1+text2+text3
+   notes[0][5] = text1+text2+text3+text4
+   return notes
