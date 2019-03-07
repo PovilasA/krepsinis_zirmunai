@@ -74,18 +74,18 @@ def mock_read_input_data(mocker, read_input_data_object):
 
 def individual_summary_values():
    values = [
-      [23,'7 - 2','+115','DWWWW','DWWWW','+92','Nepralaimėjo 5','Nepralaimėjo 5'],
-      [13,'3 - 2','+29', 'D--LW','DLWLW','+9', 'Lygiosios 1','Nelaimėjo 2'],
-      [10,'1 - 1','-7', 'D----','DWLDD','-7', 'Lygiosios 1','Nepralaimėjo 2'],
-      [17,'1 - 5','-48','DL-LW','DLLWL','-18','Nelaimėjo 2','Nelaimėjo 3'],
-      [9, '7 - 2','+80','-LWW-','LWWWW','+64', 'Nebuvo 1','Pralaimėjo 1'],
-      [6, '1 - 5','-81','-LL-L','LLLWL','-71','Nebuvo 1','Pralaimėjo 3'],
-      [15,'3 - 3','-5', '-W-L-','WLLLW','-22','Nebuvo 1','Laimėjo 1'],
-      [19,'3 - 6','-58','-LLW-','LLWWL','-42','Nebuvo 1','Pralaimėjo 2'],
-      [17,'5 - 2','+46','-WW-L','WWLWW','+39', 'Nebuvo 1','Laimėjo 2'],
-      [19,'5 - 4','+51','-WWLW','WWLWL','+47', 'Nebuvo 1','Laimėjo 2'],
-      [19,'4 - 4','+29','DWWW-','DWWWL','+59', 'Nepralaimėjo 4','Nepralaimėjo 4'],
-      [18,'6 - 3','+72','-LW-W','LWWLW','+56', 'Nebuvo 1','Pralaimėjo 1']
+      ['23','7 - 2','+115','DWWWW','DWWWW','+92','Nepralaimėjo 5','Nepralaimėjo 5'],
+      ['13','3 - 2','+29', 'D--LW','DLWLW','+9', 'Lygiosios 1','Nelaimėjo 2'],
+      ['10','1 - 1','-7', 'D----','DWLDD','-7', 'Lygiosios 1','Nepralaimėjo 2'],
+      ['17','1 - 5','-48','DL-LW','DLLWL','-18','Nelaimėjo 2','Nelaimėjo 3'],
+      ['9', '7 - 2','+80','-LWW-','LWWWW','+64', 'Nebuvo 1','Pralaimėjo 1'],
+      ['6', '1 - 5','-81','-LL-L','LLLWL','-71','Nebuvo 1','Pralaimėjo 3'],
+      ['15','3 - 3','-5', '-W-L-','WLLLW','-22','Nebuvo 1','Laimėjo 1'],
+      ['19','3 - 6','-58','-LLW-','LLWWL','-42','Nebuvo 1','Pralaimėjo 2'],
+      ['17','5 - 2','+46','-WW-L','WWLWW','+39', 'Nebuvo 1','Laimėjo 2'],
+      ['19','5 - 4','+51','-WWLW','WWLWL','+47', 'Nebuvo 1','Laimėjo 2'],
+      ['19','4 - 4','+29','DWWW-','DWWWL','+59', 'Nepralaimėjo 4','Nepralaimėjo 4'],
+      ['18','6 - 3','+72','-LW-W','LWWLW','+56', 'Nebuvo 1','Pralaimėjo 1']
    ]
    columns = ['Sužaista','Laimėta-Pralaimėta','Taškų santykis',
               'Paskutiniai 5 kartai','Paskutiniai 5 kartai (be praleidimų)',

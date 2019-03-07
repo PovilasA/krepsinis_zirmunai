@@ -8,6 +8,10 @@ ind_summary = IndividualSummary(parsed_input)
 def test_values_compute():
    ind_summary_values = ind_summary.Values().compute()
    values_correct = individual_summary_values()
+   col = 'Taškų santykis'
+   values_correct[col] = '="' + values_correct[col] + '"'
+   col = 'Taškų santykis per paskutinius 5 kartus'
+   values_correct[col] = '="' + values_correct[col] + '"'
    assert ind_summary_values.equals(values_correct)
 
 def test_notes_compute():

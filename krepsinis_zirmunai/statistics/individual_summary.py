@@ -62,7 +62,7 @@ class IndividualSummary:
 
       # Column 'Sužaista'
       def games_played(self):
-         return(np.isfinite(self.parsed_input).sum(axis=1))
+         return(np.isfinite(self.parsed_input).sum(axis=1).astype('str'))
 
       # Column 'Laimėta-Pralaimėta'
       def won_and_lost(self):
@@ -168,4 +168,6 @@ def result_to_letter(r):
    return 'W' if r > 0 else 'L' if r < 0 else 'D' if r == 0  else '-'
 
 def point_difference_to_plus_minus(list):
-   return ['+' + str(int(i)) if i > 0 else str(int(i)) for i in list]
+   positive = lambda i: '="+' + str(int(i)) + '"'
+   negative = lambda i: '="' + str(int(i)) + '"'
+   return [positive(i) if i > 0 else negative(i) for i in list]
