@@ -399,7 +399,7 @@ def test_change_values_from_dataframe_without_headers_without_indices(mocker):
       wks_range.change_values(table, headers=False, indices=False)
       new_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.new_matrix]
       assert_range_matrix_class(wks_range.new_matrix, gc.pygsheets.cell.Cell)
-      assert new_values == [['header1','header2','header3'],['11','12','13']]
+      assert new_values == [['','header2','header3'],['11','12','13']]
       delete_test_spreadsheet(client)
 
    # Offline test
@@ -411,7 +411,7 @@ def test_change_values_from_dataframe_without_headers_without_indices(mocker):
    wks_range.change_values(table, headers=False, indices=False)
    new_values = [[x_ij.value for x_ij in x_i] for x_i in wks_range.new_matrix]
    assert_range_matrix_class(wks_range.new_matrix, FakePygsheetsCell)
-   assert new_values == [['header1','header2','header3'],['11','12','13']]
+   assert new_values == [['','header2','header3'],['11','12','13']]
 
 #### change Returns self (_Range object)
 

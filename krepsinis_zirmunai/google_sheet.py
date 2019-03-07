@@ -203,7 +203,7 @@ class Worksheet:
             expected_dim = [len(self.raw_matrix),len(self.raw_matrix[0])]
             actual_dim = self.table_dimensions()
             if expected_dim != actual_dim:
-               m = 'Given table dimensions (%s) are not the same as raw_matrix dimensions!' % actual_dim
+               m = 'Given table dimensions (%s) are not the same as raw_matrix dimensions (which is %s)!' % (actual_dim, expected_dim)
                raise Worksheet._Range.ParseTableError(m)
             return('dataframe' if self.is_dataframe() else 'matrix')
          
@@ -243,6 +243,7 @@ class Worksheet:
             if self.is_dataframe():
                if not self.indices:
                   parsed_table = parsed_table.reset_index()
+                  parsed_table.columns = [''] + list(parsed_table.columns[1::])
                if not self.headers:
                   parsed_table.loc[-1] = list(parsed_table.columns)  # adding a row
                   parsed_table.index = parsed_table.index + 1  # shifting index
