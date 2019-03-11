@@ -116,3 +116,9 @@ def individual_summary_notes():
    notes[0][4] = text1+text2+text3
    notes[0][5] = text1+text2+text3+text4
    return notes
+
+def individual_summary_wrap_strategies():
+   wrap_strategies = [['WRAP_STRATEGY_UNSPECIFIED' for i in range(9)] for j in range(13)]
+   wrap_strategies[0] = ['WRAP' for w in wrap_strategies[0]]
+   return wrap_strategies
+

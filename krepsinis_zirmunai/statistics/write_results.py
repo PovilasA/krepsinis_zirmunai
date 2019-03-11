@@ -14,9 +14,11 @@ class WriteResults:
       if self.individual_summary is not None:
          values = self.individual_summary.Values().compute()
          notes = self.individual_summary.Notes().compute()
+         wrap_strategies = self.individual_summary.WrapStrategies().compute()
          range = self.worksheet.Range(self.individual_summary_string_range)
          range.change_values(values, headers=False, indices=False)
          range.change_notes(notes, headers=False, indices=False)
+         range.change_wrap_strategies(wrap_strategies, headers=False, indices=False)
          range.set_changes()
       return True
 

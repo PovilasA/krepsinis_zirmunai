@@ -39,6 +39,20 @@ class IndividualSummary:
          notes[0] = [notes_dict[n] for n in notes[0]]
          return notes
 
+   def WrapStrategies(self):
+      return IndividualSummary._WrapStrategies(self)
+
+   class _WrapStrategies:
+      def __init__(self, ind_sum_self):
+         self.columns = ind_sum_self.columns
+         self.rows = ind_sum_self.rows
+         
+      def compute(self):
+         wrap_strategies = [['WRAP_STRATEGY_UNSPECIFIED']*(len(self.columns)+1)]*(len(self.rows)+1)
+         wrap_strategies[0] = ['WRAP' for w in wrap_strategies[0]]
+         return wrap_strategies
+
+
    def Values(self):
       return IndividualSummary._Values(self)
 

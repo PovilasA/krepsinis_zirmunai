@@ -143,6 +143,17 @@ class Worksheet:
                              headers=headers,
                              indices=indices))
 
+      def get_wrap_strategies_matrix(self, headers=True, indices=False):
+         return(self.extract(method='wrap_strategy', 
+                             extract_format='matrix',
+                             headers=headers,
+                             indices=indices))
+
+      def get_wrap_strategies_datafrane(self, headers=True, indices=False):
+         return(self.extract(method='wrap_strategy', 
+                             extract_format='dataframe',
+                             headers=headers,
+                             indices=indices))
 
 
       def change(self, method, headers, indices, table):
@@ -271,6 +282,9 @@ class Worksheet:
 
       def change_notes(self, table, headers=True, indices=True):
          return(self.change('note', headers, indices, table))
+
+      def change_wrap_strategies(self, table, headers=True, indices=True):
+         return(self.change('wrap_strategy', headers, indices, table))
 
       def set_changes(self):
          pass

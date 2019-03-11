@@ -21,15 +21,18 @@ def test_execute_with_individual_summary():
    
       expected_values = individual_summary_values()
       expected_notes = individual_summary_notes()
+      expected_wrap_strategies = individual_summary_wrap_strategies()
       
       worksheet = gs.Worksheet(client, 'krepsinis_zirmunai_test_spreadsheet',
                               'Lankomumas')
       
       range = worksheet.Range('B3:J15')
       actual_values = range.get_values_dataframe(headers=True, indices=True)
-      actual_notes = range.get_notes_matrix(headers=False, indices=False)
+      actual_notes = range.get_notes_matrix(headers=False, indices=False)   
+      actual_wrap_strategies = range.get_wrap_strategies_matrix(headers=False, indices=False)
       assert actual_values.equals(expected_values)
       assert actual_notes == expected_notes
+      assert actual_wrap_strategies == expected_wrap_strategies
       delete_test_spreadsheet(client)
 
    #TODO maybe to do offline test?
