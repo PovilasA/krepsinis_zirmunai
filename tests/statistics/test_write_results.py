@@ -33,6 +33,7 @@ def test_execute_with_individual_summary():
       assert actual_values.equals(expected_values)
       assert actual_notes == expected_notes
       assert actual_wrap_strategies == expected_wrap_strategies
+      # TODO test column widths. Do not know how...
       delete_test_spreadsheet(client)
 
    #TODO maybe to do offline test?

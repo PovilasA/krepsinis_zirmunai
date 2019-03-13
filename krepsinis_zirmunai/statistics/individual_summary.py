@@ -52,6 +52,10 @@ class IndividualSummary:
          wrap_strategies[0] = ['WRAP' for w in wrap_strategies[0]]
          return wrap_strategies
 
+   def ColumnWidths(self):
+      w = [100]*(len(self.columns)+1)
+      w[0] = 200
+      return w
 
    def Values(self):
       return IndividualSummary._Values(self)
