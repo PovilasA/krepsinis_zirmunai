@@ -4,7 +4,7 @@ from krepsinis_zirmunai.statistics.read_input_data import *
 
 from freezegun import freeze_time
 
-from tests.run_online_tests import *
+from tests.test_selection import *
 from tests.helpers.helper_methods import *
 from tests.helpers.mocks import *
 

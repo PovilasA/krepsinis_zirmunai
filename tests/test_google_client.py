@@ -3,7 +3,7 @@ from krepsinis_zirmunai import google_client as gc
 from mock import call
 import pytest
 
-from tests.run_online_tests import *
+from tests.test_selection import *
 
 def create_client(credentials_file='credentials.json'):
     return(gc.Pygsheets(credentials_file))

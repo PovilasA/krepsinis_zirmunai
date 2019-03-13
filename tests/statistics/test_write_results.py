@@ -7,13 +7,13 @@ from krepsinis_zirmunai.statistics.write_results import *
 
 from tests.helpers.helper_methods import *
 from tests.helpers.mocks import *
-from tests.run_online_tests import *
+from tests.test_selection import *
 
 client = gc.Pygsheets().authenticate().get_client()
 parsed_input = read_mock_table('parsed_input_table.csv', format='dataframe')
 
 def test_execute_with_individual_summary():
-   if RUN_ONLINE_TESTS:
+   if RUN_ONLINE_TESTS and RUN_VERY_LONG_TESTS:
       create_test_spreadsheet(client, insert_values = False)
       individual_summary = IndividualSummary(parsed_input)
       WriteResults(client, 'krepsinis_zirmunai_test_spreadsheet', 'Lankomumas',

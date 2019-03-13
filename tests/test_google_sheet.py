@@ -3,7 +3,7 @@ from krepsinis_zirmunai import google_sheet as gs
 
 import pytest
 
-from tests.run_online_tests import *
+from tests.test_selection import *
 from tests.helpers.helper_methods import *
 from tests.helpers.mocks import *
 import random
