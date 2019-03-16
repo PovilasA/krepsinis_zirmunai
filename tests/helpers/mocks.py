@@ -74,18 +74,18 @@ def mock_read_input_data(mocker, read_input_data_object):
 
 def individual_summary_values():
    values = [
-      ['23','7 - 2','+115','DWWWW','DWWWW','+92','Nepralaimėjo 5','Nepralaimėjo 5'],
-      ['13','3 - 2','+29', 'D--LW','DLWLW','+9', 'Lygiosios 1','Nelaimėjo 2'],
-      ['10','1 - 1','-7', 'D----','DWLDD','-7', 'Lygiosios 1','Nepralaimėjo 2'],
-      ['17','1 - 5','-48','DL-LW','DLLWL','-18','Nelaimėjo 2','Nelaimėjo 3'],
-      ['9', '7 - 2','+80','-LWW-','LWWWW','+64', 'Nebuvo 1','Pralaimėjo 1'],
-      ['6', '1 - 5','-81','-LL-L','LLLWL','-71','Nebuvo 1','Pralaimėjo 3'],
-      ['15','3 - 3','-5', '-W-L-','WLLLW','-22','Nebuvo 1','Laimėjo 1'],
-      ['19','3 - 6','-58','-LLW-','LLWWL','-42','Nebuvo 1','Pralaimėjo 2'],
-      ['17','5 - 2','+46','-WW-L','WWLWW','+39', 'Nebuvo 1','Laimėjo 2'],
-      ['19','5 - 4','+51','-WWLW','WWLWL','+47', 'Nebuvo 1','Laimėjo 2'],
-      ['19','4 - 4','+29','DWWW-','DWWWL','+59', 'Nepralaimėjo 4','Nepralaimėjo 4'],
-      ['18','6 - 3','+72','-LW-W','LWWLW','+56', 'Nebuvo 1','Pralaimėjo 1']
+     ['23','7 - 2','+115','DWWWW','DWWWW','+92','Nepralaimėjo 5','Nepralaimėjo 5'],
+     ['19','3 - 6','-58','-LLW-','LLWWL','-42','Nebuvo 1','Pralaimėjo 2'],
+     ['19','5 - 4','+51','-WWLW','WWLWL','+47', 'Nebuvo 1','Laimėjo 2'],
+     ['19','4 - 4','+29','DWWW-','DWWWL','+59', 'Nepralaimėjo 4','Nepralaimėjo 4'],
+     ['18','6 - 3','+72','-LW-W','LWWLW','+56', 'Nebuvo 1','Pralaimėjo 1'],
+     ['17','1 - 5','-48','DL-LW','DLLWL','-18','Nelaimėjo 2','Nelaimėjo 3'],
+     ['17','5 - 2','+46','-WW-L','WWLWW','+39', 'Nebuvo 1','Laimėjo 2'],
+     ['15','3 - 3','-5', '-W-L-','WLLLW','-22','Nebuvo 1','Laimėjo 1'],
+     ['13','3 - 2','+29', 'D--LW','DLWLW','+9', 'Lygiosios 1','Nelaimėjo 2'],
+     ['10','1 - 1','-7', 'D----','DWLDD','-7', 'Lygiosios 1','Nepralaimėjo 2'],
+     ['9', '7 - 2','+80','-LWW-','LWWWW','+64', 'Nebuvo 1','Pralaimėjo 1'],
+     ['6', '1 - 5','-81','-LL-L','LLLWL','-71','Nebuvo 1','Pralaimėjo 3']
    ]
    columns = ['Sužaista','Laimėta-Pralaimėta','Taškų santykis',
               'Paskutiniai 5 kartai','Paskutiniai 5 kartai (be praleidimų)',
@@ -93,17 +93,17 @@ def individual_summary_values():
               'Serija (be praleidimų)']
    player_names = [
    'Name_one ASurname_one',
-   'Name_one BSurname_two',
-   'Name_three Surname_three',
-   'Name_four Surname_three',
-   'Name_five Surname_five',
-   'Name_one Surname_six',
-   'Name_five Surname_seven',
    'Name_eight Surname_eight',
-   'Name_nine Surname_nine',
    'Name_ten Surname_ten',
    'Name_eleven Surname_eleven',
-   'Name_twelwe Surname_twelve'
+   'Name_twelwe Surname_twelve',
+   'Name_four Surname_three',
+   'Name_nine Surname_nine',
+   'Name_five Surname_seven',
+   'Name_one BSurname_two',
+   'Name_three Surname_three',
+   'Name_five Surname_five',
+   'Name_one Surname_six'
    ]
    return(pd.DataFrame(values, columns=columns, index=player_names))
 

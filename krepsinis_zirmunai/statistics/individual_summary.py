@@ -54,7 +54,7 @@ class IndividualSummary:
 
    def ColumnWidths(self):
       w = [100]*(len(self.columns)+1)
-      w[0] = 200
+      w[0] = 150
       return w
 
    def Values(self):
@@ -76,7 +76,13 @@ class IndividualSummary:
          result['Taškų santykis per paskutinius 5 kartus'] = self.point_difference_last_5()
          result['Serija'] = self.streak()
          result['Serija (be praleidimų)'] = self.streak_wo_absence()
+         result = self.sort(result)
          return(result)
+
+      def sort(self, result):
+         result['temp'] = result['Sužaista'].astype('int')
+         return result.sort_values('temp', ascending=False).drop('temp', axis=1)
+
 
       # Column 'Sužaista'
       def games_played(self):
