@@ -22,13 +22,10 @@ def calculate():
    client = gc.Pygsheets().authenticate().get_client()
    parsed_input = ReadInputData(client, SPREADSHEET_NAME, 
                                 INPUT_WORKSHEET_NAME, TOP_VALUES).parse()
-   # from IPython import embed; embed()
+   
    individual_summary = IndividualSummary(parsed_input)
    WriteResults(client, SPREADSHEET_NAME, OUTPUT_WORKSHEET_NAME,
                 individual_summary, IND_SUM_RANGE).execute()
-
-   # for i in range(100880000):
-   #    i*i
 
    end = time.time()
    output = "Statistics were succesfully calculated using spreadsheet's '%s' "\
