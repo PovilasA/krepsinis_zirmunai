@@ -18,3 +18,8 @@ def test_notes_compute():
    ind_summary_notes = ind_summary.Notes().compute()
    notes_correct = individual_summary_notes()
    assert ind_summary_notes == notes_correct
+
+def test_wrap_strategies_compute():
+   ind_summary_wrap_strategies = ind_summary.WrapStrategies().compute()
+   wrap_strategies_correct = individual_summary_wrap_strategies()
+   assert ind_summary_wrap_strategies == wrap_strategies_correct
