@@ -85,7 +85,7 @@ class ReadInputData:
       return(1 if self.__first_team(c) else -1 if self.__second_team(c) else 0)
 
    def __first_team(self, color_code):
-      return(color_code == (1, 1, 1, 0)) # white
+      return(color_code == (1, 1, 1, 0) or color_code == (None,None,None,None)) # white
 
    def __second_team(self, color_code):
       return(color_code == (0.2901961, 0.5254902, 0.9098039, 0)) # blue
