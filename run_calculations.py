@@ -10,11 +10,12 @@ from krepsinis_zirmunai.statistics.write_results import *
 # SPREADSHEET_NAME = 'krepsinis zirmunai copy'
 # INPUT_WORKSHEET_NAME = 'Lankomumas'
 # OUTPUT_WORKSHEET_NAME = 'Statistika1'
+
 SPREADSHEET_NAME = 'Krepšinis Žirmūnai 20:00 - 21:30'
-INPUT_WORKSHEET_NAME = 'Lankomumas'
-OUTPUT_WORKSHEET_NAME = 'Statistika'
-TOP_VALUES = 12
-IND_SUM_RANGE = 'B3:J15'
+INPUT_WORKSHEET_NAME = 'Lankomumas 2019-2020'
+OUTPUT_WORKSHEET_NAME = 'Statistika 2019-2020'
+TOP_VALUES = 14          # how many players    
+IND_SUM_RANGE = 'B3:J17' # where it is saved 
 
 def calculate():
    import time; start = time. time()
