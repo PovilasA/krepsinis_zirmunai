@@ -96,7 +96,7 @@ class IndividualSummary:
 
       # Column 'Taškų santykis'
       def point_difference(self):
-         p = self.parsed_input.sum(axis=1)
+         p = self.parsed_input.sum(axis=1).fillna(0)
          return(point_difference_to_plus_minus(p))
 
       # Column 'Paskutiniai 5 kartai'
